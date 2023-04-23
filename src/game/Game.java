@@ -1,9 +1,6 @@
 package game;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.GridPane;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -11,14 +8,11 @@ import java.util.concurrent.TimeUnit;
 
 import javafx.application.Platform;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
 import game.texture.Texture;
-import game.entity.inertEntity.item.Item;
 import game.entity.livingEntity.LivingEntity;
 import game.entity.livingEntity.AutoMoveEntity;
-import game.entity.livingEntity.Player;
 import game.level.Level;
 import game.level.map.Zone;
 
@@ -30,6 +24,7 @@ public class Game extends Application{
 		Keyboard keyboard = new Keyboard(scene);
 		keyboard.startArrowHandler(zone);
 		keyboard.startActionHandler(zone);
+		keyboard.startToggleRunHandler(zone);
 		
 		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 		executor.schedule(() -> {

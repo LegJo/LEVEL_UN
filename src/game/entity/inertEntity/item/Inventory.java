@@ -1,9 +1,7 @@
 package game.entity.inertEntity.item;
 
-import game.Coord;
 import game.GameConstants;
 import game.texture.Texture;
-import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 
@@ -87,7 +85,6 @@ public class Inventory {
 	public void addChildToStackPane(ImageView itemImgView) {
 		int itemIndex = this.getItemCount();
 		StackPane inventoryPane = this.getInventoryStackPane();
-		//int index = Math.min(1, inventoryPane.getChildren().size()); // pour s'assurer que l'index est >= 1
 		inventoryPane.getChildren().add(1, itemImgView);
 		itemImgView.setTranslateX(1);
 		itemImgView.setTranslateY((GameConstants.TEXTURE_SIZE + 8) * (itemIndex - 5) - 1);

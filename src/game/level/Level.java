@@ -6,9 +6,7 @@ import java.util.ArrayList;
 import game.Coord;
 import game.GameConstants;
 import game.texture.BackgroundType;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -115,8 +113,7 @@ public enum Level {
 		gridPane_Entity.setId("gridPane_Entity");
 		gridPane_Bg.setId("gridPane_Bg");
 		StackPane root = new StackPane(gridPane_Bg, gridPane_Entity, borderPane_Hud);
-		StackPane.setAlignment(borderPane_Hud, Pos.TOP_RIGHT); 
-		//StackPane.setMargin(borderPane_Hud, new Insets(10));
+		StackPane.setAlignment(borderPane_Hud, Pos.TOP_RIGHT);
         Scene scene = new Scene(root, textureSize*this.zone.getWidth(), textureSize*this.zone.getHeight());
 	    return scene;
     }
@@ -128,4 +125,8 @@ public enum Level {
     public boolean isFinished() {
        return false;
     }
+
+	public Goal getGoal() {
+		return goal;
+	}
 }

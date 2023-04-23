@@ -6,7 +6,6 @@ import game.Coord;
 import game.Direction;
 import game.entity.*;
 import game.entity.inertEntity.item.Item;
-import game.entity.livingEntity.LivingEntity;
 import game.entity.livingEntity.Player;
 import game.texture.BackgroundType;
 

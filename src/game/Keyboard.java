@@ -7,6 +7,8 @@ import javafx.scene.input.KeyEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import game.entity.inertEntity.item.Inventory;
 import game.entity.inertEntity.item.Item;
@@ -50,19 +52,19 @@ public class Keyboard {
 		        KeyCode code = event.getCode();
 		        Player player = zone.getPlayer();
 		        if (code == KeyCode.UP || code == KeyCode.Z) {
-		            if(!(player.isInMovement() || player.isInAction())) {
+		            if(player.canMove()) {
 		            	player.move(Direction.UP, zone);		
 		            }    
 		        } else if (code == KeyCode.LEFT || code == KeyCode.Q) {
-		        	if(!(player.isInMovement() || player.isInAction())) {
+		        	if(player.canMove()) {
 		            	player.move(Direction.LEFT, zone);		
 		            }  
 		        } else if (code == KeyCode.DOWN || code == KeyCode.S) {
-		        	if(!(player.isInMovement() || player.isInAction())) {
+		        	if(player.canMove()) {
 		            	player.move(Direction.DOWN, zone);		
 		            } 
 		        } else if (code == KeyCode.RIGHT || code == KeyCode.D) {
-		        	if(!(player.isInMovement() || player.isInAction())) {
+		        	if(player.canMove()) {
 		            	player.move(Direction.RIGHT, zone);		
 		            } 
 		        }
@@ -105,6 +107,26 @@ public class Keyboard {
 			        }
 		        }
 		    }
+		};
+		this.addHandler(actionHandler);
+    }
+    
+    public void startToggleRunHandler(Zone zone) {
+    	EventHandler<KeyEvent> actionHandler = new EventHandler<KeyEvent>() {
+		    @Override
+		    public void handle(KeyEvent event) {
+		        KeyCode code = event.getCode();
+		        Player player = zone.getPlayer();
+		        if (code == KeyCode.SHIFT) {
+		            if(!player.isInRun()) {
+		            	player.setInRun(true);
+		            	System.out.println(player + " is Running");
+		            } else {
+		            	player.setInRun(false);
+		            	System.out.println(player + " is Walking");
+		            }
+		        }
+		    }   
 		};
 		this.addHandler(actionHandler);
     }

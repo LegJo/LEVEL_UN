@@ -36,7 +36,7 @@ public abstract class Item extends InertEntity {
 		int movTextureInd;
 		int startActionInd = 0;
 		int noImgByAction = this.getAllActionTexture().length/Direction.values().length;
-		switch(direction.name()) {
+				switch(direction.name()) {
 			case "DOWN": 
 				movTextureInd = 0;
 			break;
@@ -55,16 +55,21 @@ public abstract class Item extends InertEntity {
 			default: throw new IllegalArgumentException("Unexpected value: " + direction.name());
 		}
 		
+		ImageView imageView = livEntity.getTexture().getImgView();
+		imageView.setScaleX(GameConstants.TEXTURE_ACTION_ANIM_SCALE );
+		imageView.setScaleY(GameConstants.TEXTURE_ACTION_ANIM_SCALE );
 	    Image[] images = {
     		this.getActionTexture(startActionInd).getImage(),
     		this.getActionTexture(startActionInd + 1).getImage(),
 	    };
 	    
-	    ImageView imageView = livEntity.getTexture().getImgView();
+	    
 	    Transition actionAnimation = Animation.ImgAnimation(imageView, images, GameConstants.ACTION_DURATION);
 	    actionAnimation.setOnFinished(e -> {
 	    	livEntity.setInAction(false);
 	    	imageView.setImage(livEntity.getMovementTexture(movTextureInd).getImage());
+	    	imageView.setScaleX(1);
+			imageView.setScaleY(1);
 	    });
 	    if(!livEntity.isInAction()) {
 	    	actionAnimation.play();
@@ -85,7 +90,7 @@ public abstract class Item extends InertEntity {
 	
 	@Override
 	
-	public void resolvCollision(Entity entity, Direction direction) {
+	public void resolvCollision(Entity entity, Direction direction, Zone zone) {
 		if(entity instanceof Player) {
 			Player player = (Player) entity;
 			player.getInventory().addItem(this);

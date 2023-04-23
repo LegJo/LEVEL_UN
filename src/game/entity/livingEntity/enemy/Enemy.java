@@ -4,8 +4,8 @@ import game.Coord;
 import game.Direction;
 import game.entity.Entity;
 import game.entity.livingEntity.LivingEntity;
-import game.entity.livingEntity.AutoMoveEntity;
 import game.level.map.Zone;
+import game.entity.livingEntity.AutoMoveEntity;
 import game.texture.Texture;
 public class Enemy extends LivingEntity implements AutoMoveEntity{
 	private final int hustle;
@@ -17,9 +17,17 @@ public class Enemy extends LivingEntity implements AutoMoveEntity{
 		this.power = power;
 	}
 	
-	boolean attack(LivingEntity target) {
-		
-		return false;
+	public void counterAttack(LivingEntity target, Direction direction, Zone zone) {
+		if(Math.random()*10 < this.getHustle()) {
+			this.attack(target, direction, zone);
+		}
+	}
+	
+	public void attack(LivingEntity target, Direction direction, Zone zone) {
+		this.setDirection(target.getDirection().getOpposite());
+		//ajouter animation d'attack 
+		if(!target.isInvincible())
+			target.takeDamage(this.getPower(), direction, zone);
 	}
 
 	public int getHustle() {
@@ -31,10 +39,10 @@ public class Enemy extends LivingEntity implements AutoMoveEntity{
 	}
 	
 	@Override
-	public void resolvCollision(Entity entity, Direction direction) {
+	public void resolvCollision(Entity entity, Direction direction, Zone zone) {
 		if( (entity instanceof LivingEntity) && !(entity instanceof Enemy) ) {
 			LivingEntity livEntity = (LivingEntity) entity;
-			livEntity.takeDamage(this.getPower());
+//			this.counterAttack(livEntity, direction, zone); //à retravailler car permet de passer à travers un ennemy quand spam movement dessus
 		}
 		return;
 	}

@@ -1,7 +1,6 @@
 package game.texture;
 
 import game.Coord;
-import game.GameConstants;
 import javafx.animation.FadeTransition;
 import javafx.animation.Transition;
 import javafx.animation.TranslateTransition;
@@ -10,7 +9,8 @@ import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
 public class Animation {
-	public static TranslateTransition movementTranslation(ImageView imageView, Coord translateCoord, int animDuration) {
+	
+	public static TranslateTransition translateTranslation(ImageView imageView, Coord translateCoord, int animDuration) {
 		TranslateTransition translateTransition = new TranslateTransition(Duration.millis(animDuration-150), imageView);
 	    translateTransition.setToX(translateCoord.getX());
 	    translateTransition.setToY(translateCoord.getY());
@@ -18,7 +18,7 @@ public class Animation {
 	}
 	
 	public static Transition ImgAnimation(ImageView imageView, Image[] images, int animDuration) {
-		
+		imageView.toFront();
 		Transition imageTransition = new Transition() {
 	        { 
 	            setCycleDuration(Duration.millis(animDuration));
@@ -28,10 +28,8 @@ public class Animation {
 	        protected void interpolate(double frac) {
 	        	for (int i = 0; i < images.length; i++) {
 	        		float startFrac = (float) i/images.length;
-	        		float endFrac =(float) (i+1)/images.length;
+	        		float endFrac = (float) (i+1)/images.length;
 	        		if (frac >= startFrac && frac < endFrac) {
-	        			imageView.setFitWidth(images[i].getWidth()*GameConstants.TEXTURE_SCALE);
-	        			imageView.setFitHeight(images[i].getHeight()*GameConstants.TEXTURE_SCALE);
 		            	imageView.setImage(images[i]);
 	        		}
 	        	}
@@ -40,7 +38,7 @@ public class Animation {
 		return imageTransition;
 	}
 	
-	public static Transition damageTakenAnim(ImageView imageView) {
+	public static Transition damageTakenAnim(ImageView imageView) { //a retravailler psk c'est moche 
 		Transition transition = new Transition() {
 	        { 
 	            setCycleDuration(Duration.seconds(0.5));

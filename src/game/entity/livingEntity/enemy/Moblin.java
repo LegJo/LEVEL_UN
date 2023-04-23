@@ -3,7 +3,6 @@ package game.entity.livingEntity.enemy;
 
 import game.Coord;
 import game.GameConstants;
-import game.entity.livingEntity.LivingEntity;
 import game.texture.Texture;
 
 public class Moblin extends Enemy {
@@ -30,12 +29,6 @@ public class Moblin extends Enemy {
 			this.movementTexture[i] = new Texture(movImgPath[i]);
 		}
 		this.currentTexture = new Texture(movImgPath[0]);
-	}
-
-	@Override
-	public boolean attack(LivingEntity target) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 	
 	@Override

@@ -6,6 +6,7 @@ import game.GameConstants;
 import game.entity.Entity;
 import game.entity.inertEntity.item.Inventory;
 import game.entity.livingEntity.enemy.Enemy;
+import game.level.map.Zone;
 import game.texture.Texture;
 
 public class Player extends LivingEntity {
@@ -31,10 +32,12 @@ public class Player extends LivingEntity {
 	}
 	
 	@Override
-	public void resolvCollision(Entity entity, Direction direction) {
+	public void resolvCollision(Entity entity, Direction direction, Zone zone) {
 		if(entity instanceof Enemy) {
 			Enemy enemy = (Enemy) entity;
-			this.takeDamage(enemy.getPower());
+//			if(Math.random()*10 < enemy.getHustle()) {
+//				enemy.counterAttack(this, direction, zone);
+//			}
 		}
 	}
 

@@ -1,5 +1,7 @@
 package game;
 
+import java.util.Iterator;
+
 public class Coord {
     private int x;
     private int y;
@@ -39,11 +41,21 @@ public class Coord {
     
     public void addDirection(Direction direction) {
     	switch (direction.name()) {
-		case "DOWN": this.addY(1); break;
-		case "UP": this.addY(-1); break;
-		case "LEFT": this.addX(-1); break;
-		case "RIGHT":this.addX(1); break;
-	}
+			case "DOWN": this.addY(1); break;
+			case "UP": this.addY(-1); break;
+			case "LEFT": this.addX(-1); break;
+			case "RIGHT":this.addX(1); break;
+    	}
+    }
+    
+    public void addDirectionToScene(Direction direction) {
+    	int textureSize = GameConstants.TEXTURE_SIZE;
+    	switch (direction.name()) {
+			case "DOWN": this.addY(textureSize); break;
+			case "UP": this.addY(-textureSize); break;
+			case "LEFT": this.addX(-textureSize); break;
+			case "RIGHT":this.addX(textureSize); break;
+		}
     }
     
     @Override

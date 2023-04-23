@@ -3,11 +3,12 @@ package game;
 public class GameConstants {
 	
 	public final static int MOVEMENT_DURATION = 400;
-	public final static int ACTION_DURATION = 600;
+	public final static int ACTION_DURATION = 400;
 	public final static int ONHIT_INVINCIBILITY_DURATION = 1200;
 	public final static int FPS = 90;
 	public final static int TEXTURE_SIZE = 28;
 	public final static double TEXTURE_SCALE = 1.75; // TEXTURE_SIZE/16
+	public final static double TEXTURE_ACTION_ANIM_SCALE = 1.5; //ACTION_TEXTURE_SIZE/TEXTURE_SIZE
 	public final static int SCREEN_WIDTH = 1280;
 	public final static int SCREEN_HEIGHT = 720;
 	

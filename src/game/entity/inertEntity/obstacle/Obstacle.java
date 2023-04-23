@@ -14,7 +14,7 @@ public abstract class Obstacle extends InertEntity {
 	}
 	
 	@Override
-	public void resolvCollision(Entity entity, Direction direction) {
+	public void resolvCollision(Entity entity, Direction direction, Zone zone) {
 		return;  
 	}
 

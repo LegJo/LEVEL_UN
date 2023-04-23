@@ -9,11 +9,12 @@ import game.level.map.Zone;
 public interface AutoMoveEntity {
 	boolean isInMovement();
 	boolean isInAnimation();
+	boolean canMove();
 	void move(Direction direction, Zone zone);
 	int getHustle();
 	
   	default void randomMovement(Zone zone) {
-  		if(this.isInMovement() || this.isInAnimation()) {
+  		if(!this.canMove() || this.isInAnimation()) {
 			return;
 		}
         Random random = new Random();

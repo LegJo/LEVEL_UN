@@ -28,7 +28,7 @@ public abstract class Entity {
 	 * @param entity that is colliding with this
 	 * @return return a boolean that indicate if the entity can move on the entity he collide or not
 	 */
-    abstract public void resolvCollision(Entity entity, Direction direction);
+    abstract public void resolvCollision(Entity entity, Direction direction, Zone zone);
     
     public boolean willStayInZone(Zone zone, Direction direction) {
 		switch(direction.name()) {
