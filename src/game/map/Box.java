@@ -1,16 +1,21 @@
 package game.map;
 
 import game.entity.Entity;
-import game.texture.BackgroundTexture;
+import game.texture.Background;
 import game.texture.BackgroundType;
 
 public class Box {
     private Entity entity;
-    private BackgroundTexture backgroundTexture;
+    private Background background;
 
+    
+    public Box(Entity entity, Background bg) {
+    	this.entity = entity;
+        this.background = bg;
+    }
+    
     public Box(Entity entity, BackgroundType bgType) {
-        this.entity = entity;
-        this.backgroundTexture = new BackgroundTexture(bgType);
+        this(entity, new Background(bgType));
     }
 
     public Entity getEntity() {
@@ -25,17 +30,25 @@ public class Box {
     	this.setEntity(null);
     }
 
-    public BackgroundTexture getBackgroundTexture() {
-        return backgroundTexture;
+    public Background getBackground() {
+        return background;
     }
 
-    public void setBackgroundTexture(BackgroundType bgType) {
-		backgroundTexture.setImagePath(bgType.getImgPath());
+    public void setBackground(Background bg) {
+		background = bg;
+    }
+    
+    public void setBackground(BackgroundType bgType) {
+		background.setImagePath(bgType.getImgPath());
     }
     
     public boolean isEmpty() {
     	return(entity == null);
     }
+    
+	public static Box emptyBox() {
+		return new Box(null, BackgroundType.DEFAULT);
+	}
     
     @Override
     public String toString() {

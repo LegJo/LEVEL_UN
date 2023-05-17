@@ -43,7 +43,7 @@ public class HealthBar {
 				return i;
 			}
 		}
-		return 0; // return -1 ? theoriquement si ici c'est que player est mort
+		return 0;
 	}
 	
 	public Heart getFirstNonEmptyHeart() {
@@ -61,7 +61,7 @@ public class HealthBar {
 			do {
 				healthToAdd = getHeart(heartIndex).addHealthIn(healthToAdd);
 				heartIndex += 1;
-			} while (healthToAdd !=  0 && heartIndex  < heartTab.length - 1);
+			} while (healthToAdd !=  0 && heartIndex  < heartTab.length );
 		} else { //remove health from healthBar
 			int healthToRemove = -diffHealth;
 			do {

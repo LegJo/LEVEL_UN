@@ -1,5 +1,7 @@
 package game.map;
 
+import java.util.Random;
+
 public enum Direction {
     LEFT,
     RIGHT,
@@ -14,5 +16,10 @@ public enum Direction {
 			case "DOWN": return Direction.UP;
 		}
 		return null;
+	}
+
+	public static Direction getRandomDirection() {
+		Random random = new Random();
+		return Direction.values()[random.nextInt(Direction.values().length)];
 	}
 }

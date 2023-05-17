@@ -1,11 +1,13 @@
 package game.map;
 
 import java.util.ArrayList;
-
 import game.entity.*;
 import game.entity.inertEntity.item.Item;
+import game.entity.inertEntity.item.Usable;
+import game.entity.inertEntity.obstacle.Destroyable;
+import game.entity.livingEntity.LivingEntity;
 import game.entity.livingEntity.Player;
-import game.entity.livingEntity.enemy.Enemy;
+import game.texture.BackgroundGroup;
 import game.texture.BackgroundType;
 
 public class Zone {
@@ -16,20 +18,35 @@ public class Zone {
 	private int width;
 	private Box[][] layout;
 
-	public Zone(int width, int height, BackgroundType bgType, ArrayList<Entity> entityList) {
+	public Zone(int width, int height, ArrayList<BackgroundGroup> groupBgList, ArrayList<EntityGroup> groupEntityList , ArrayList<Entity> singleEntityList) {
 		this.height = height;
 		this.width = width;
 		this.layout = new Box[width][height];
-		this.entityList = entityList;
+		this.entityList = new ArrayList<>();
 		this.entityModified = new ArrayList<>();
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
-				this.layout[x][y] = new Box(null, bgType);
+				this.layout[x][y] = new Box(null, BackgroundType.DEFAULT);
 			}
 		}
-
-		entityList.forEach(entity -> {
-			this.layout[entity.getCoord().getX()][entity.getCoord().getY()] = new Box(entity, bgType);
+		
+		groupBgList.forEach(backgroundGroup -> {
+			backgroundGroup.getBackgroundList().forEach(bg -> {
+				Coord bgCoord = backgroundGroup.getBackgroundCoord().get(backgroundGroup.getBackgroundList().indexOf(bg));
+				this.layout[bgCoord.getX()][bgCoord.getY()].setBackground(bg);
+			});
+		});
+		
+		groupEntityList.forEach(entityGroup -> {
+			entityGroup.getEntityList().forEach(entity -> {
+				this.layout[entity.getCoord().getX()][entity.getCoord().getY()].setEntity(entity);
+				entityList.add(entity);
+			});
+		});
+		
+		singleEntityList.forEach(entity -> {
+			this.layout[entity.getCoord().getX()][entity.getCoord().getY()].setEntity(entity);
+			entityList.add(entity);
 			if (entity instanceof Player)
 				this.player = (Player) entity;
 		});
@@ -56,7 +73,10 @@ public class Zone {
 	}
 
 	public Box getBox(int x, int y) {
-		return this.getLayout()[x][y];
+		if(x >= 0 && y >= 0 && x < getWidth() && y < getHeight())
+			return this.getLayout()[x][y];
+		else
+			return Box.emptyBox();
 	}
 	
 	public Box getBox(Coord coord) {
@@ -76,7 +96,7 @@ public class Zone {
 	}
 
 	public void setBox(int x, int y, BackgroundType bgType, Entity entity) {
-		this.getBox(x, y).setBackgroundTexture(bgType);
+		this.getBox(x, y).setBackground(bgType);
 	}
 
 	public Player getPlayer() {
@@ -87,6 +107,34 @@ public class Zone {
 		return entityList;
 	}
 	
+	public Coord getNearestEmptyBox(Coord coord) {
+	    int row = coord.getX();
+	    int col = coord.getY();
+	    // Recherche des boîtes vides dans l'ordre de proximité
+	    for (int i = -1; i <= 1; i++) {
+	        for (int j = -1; j <= 1; j++) {
+	            int r = row + i;
+	            int c = col + j;
+	            if (r >= 0 && r < getHeight() && c >= 0 && c < getWidth() && getBox(r,c).isEmpty()) {
+	                return new Coord(r, c);
+	            }
+	        }
+	    }
+	    for (int d = 2; d >= 1; d--) {
+	        for (int i = -d; i <= d; i++) {
+	            for (int j = -d; j <= d; j++) {
+	                int r = row + i;
+	                int c = col + j;
+	                if (r >= 0 && r < getHeight() && c >= 0 && c < getWidth() && getBox(r,c).isEmpty()) {
+	                    return new Coord(r, c);
+	                }
+	            }
+	        }
+	    }
+	    return coord;
+	}
+
+	
 	public void addEntityModified(Entity entity) {
 		entityModified.add(entity);
 	}
@@ -94,7 +142,10 @@ public class Zone {
 	public void clearEntityModified() {
 		entityModified.clear();
 	}
-
+	
+	/**
+	 * {@summary} update entities on the layout of the zone each frame 
+	 */
 	public void updateLayout() {
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
@@ -103,23 +154,41 @@ public class Zone {
 				}
 			}
 		}
-
-		entityList.forEach(entity -> {
+		
+		entityList.forEach(
+		entity -> {
+			boolean toPutInLayout = true;
+			
 			if(entity instanceof Item) {
 				Item item = (Item) entity;
-				if(!item.isInInventory())
-					this.getBox(item.getCoord()).setEntity(item);
-			} else if(entity instanceof Enemy) {
-				Enemy enemy = (Enemy) entity;
-				if(enemy.isDead()) {
-					this.getBox(enemy.getCoord()).remEntity();
-				} else {
-					this.getBox(enemy.getCoord()).setEntity(enemy);
+				if(item.isInInventory())
+					toPutInLayout = false;
+			} 
+			
+			if(entity instanceof Usable) {
+				Usable usItem = (Usable) entity;
+				if(usItem.hasBeenUsed())
+					toPutInLayout = false;
+			} 			
+			
+			if(entity instanceof LivingEntity) {
+				LivingEntity livEntity = (LivingEntity) entity;
+				if(livEntity.isDead()) {
+					toPutInLayout = false;
 				}
-			} else {
+			} 
+			
+			if(entity instanceof Destroyable) {
+				Destroyable destroyable = (Destroyable) entity;
+				if(destroyable.isDestroyed()) {
+					toPutInLayout = false;
+				}
+			} 
+			
+			if(toPutInLayout) {
 				this.getBox(entity.getCoord()).setEntity(entity);
 			}
-		});
+		});		
 	}
 
 	public ArrayList<Entity> getEntityModified() {

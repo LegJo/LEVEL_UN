@@ -49,4 +49,12 @@ public class Texture {
     	 this.refreshImage();
          this.getImgView().setImage(this.getImage());;
     }
+    
+    public void hide() {
+    	this.getImgView().setVisible(false);
+    }
+    
+    public void unhide() {
+    	this.getImgView().setVisible(true);
+    }
 }

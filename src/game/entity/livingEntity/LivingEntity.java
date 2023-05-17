@@ -6,6 +6,7 @@ import javafx.animation.*;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import game.Game;
 import game.GameConstants;
 import game.entity.Entity;
 import game.entity.livingEntity.enemy.Enemy;
@@ -18,7 +19,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 
 public abstract class LivingEntity extends Entity{
-	//Down:0,1,2 | Up: 3,4,5 | Left: 6,7,8 | Right:9,10,11
+	//Down:0,1,2 | Up: 3,4,5 | Left: 6,7,8 | Right:9,10,11 see GameConstants.java
 	protected Texture[] movementTexture;
 	protected Coord sceneCoord;
 	private boolean inMovement;
@@ -30,11 +31,13 @@ public abstract class LivingEntity extends Entity{
 	private boolean isDead;
 	private Direction direction;
 	private int health;	
+	private final int maxHealth;
 	private int speed;
 	
 	public LivingEntity(Coord coord, Texture texture, int health, int speed) {
 		super(coord, texture);
 		this.health = health;
+		this.maxHealth = (health % 10 == 0) ? health : (((int) Math.floor(health/10)) + 1)*10; 
 		this.direction = Direction.DOWN;
 		this.sceneCoord = new Coord(0,0);
 		this.inMovement = false;
@@ -52,27 +55,36 @@ public abstract class LivingEntity extends Entity{
 	}
 
 	public void setHealth(int health) {
-		this.health = health;
+		if(health > maxHealth) {
+			this.health = maxHealth;
+		} else {
+			this.health = health;
+		}
 	}
 	
 	public void setCoord(Coord coord) {
 		this.coord = coord;
 	}	
 	
-	public void move(Direction direction, Zone zone) {
-		if(!direction.equals(this.getDirection()) && this.isInAnimation()) {
+	/**
+	 * {@summary} prepare the L.Entity to move on the Scene & update the L.Entity accordingly
+	 * @param direction of the movement
+	 */
+	public void move(Direction direction) {
+		if(!direction.equals(this.getDirection()) && this.isInAnimation() && !this.isInRecoil()) {
 			this.setDirection(direction);
 			return;
 		}
-		if(this.willStayInZone(zone, direction)) {
-			if(this.willCollide(direction, zone)) {
-				zone.getBox(direction, this.getCoord()).getEntity().resolvCollision(this, direction, zone);
+    	Zone zone = Game.getZone();
+		if(this.canWalkIn(direction)) {
+			if(this.willCollide(direction)) {
+				zone.getBox(direction, this.getCoord()).getEntity().resolvCollision(this, direction);
 			} else {
 				this.setInMovement(true);
 				this.getCoord().addDirection(direction);
 			}
 		}
-		System.out.println(this + ": " + this.getCoord());
+		//System.out.println(this + ": " + this.getCoord());
 		this.setDirection(direction);
 		zone.addEntityModified(this);
 	}
@@ -97,6 +109,9 @@ public abstract class LivingEntity extends Entity{
 		this.direction = direction;
 	}
 	
+	/**
+	 * {@summary} launch animation to move the ImageView on the scene after a movement (called in gameloop)
+	 */
 	 public void moveOnScene() {
 		Direction direction = this.getDirection();
 		int startIndex;
@@ -137,7 +152,7 @@ public abstract class LivingEntity extends Entity{
 	    	this.setInAnimation(true);
 	    }
 	   
-	    System.out.println(this + ": " + sceneCoord + " (scene)");
+	    //System.out.println(this + ": " + sceneCoord + " (scene)");
 	}
 
 	private Coord getSceneCoord() {
@@ -152,28 +167,45 @@ public abstract class LivingEntity extends Entity{
 		this.inAnimation = inAnimation;
 	}
 	
-	public void takeDamage(int damage, Direction direction, Zone zone) {
+	/**
+	 * {@summary} update the health & call the recoil after damage has been taken
+	 * @param damage dealed to the living entity
+	 * @param direction of the recoil
+	 */
+	public void takeDamage(int damage, Direction direction) {
+		if(this.isInvincible()) {
+			return;
+		}
+    	Zone zone = Game.getZone();
 		this.setHealth(this.getHealth() - damage);
-		System.out.println(this + " health: " + this.getHealth() + " (-" + damage + ")");
 		if(this.getHealth() <= 0) {
 			this.setDead(true);
+			zone.addEntityModified(this);
 		}
-		this.recoil(direction, zone);
+		this.recoil(direction);
 		this.enableInvincibility();
 	}
 	
-	public void recoil(Direction direction, Zone zone) {
-		if(!this.willStayInZone(zone, direction) || !this.canMove())
+	/**
+	 * {@summary} prepare the L.Entity to be in recoil on the Scene & update the L.Entity accordingly (launch by takeDamage)
+	 * @param direction of the recoil
+	 */
+	public void recoil(Direction direction) {
+		if(!this.canWalkIn(direction) || !this.canMove() || (this.isInMovement() || this.isInAnimation()))
 			return;
-		
+    	Zone zone = Game.getZone();
 		if(zone.getBox(direction, this.getCoord()).isEmpty()) { 
 			this.getCoord().addDirection(direction);
 			this.setInRecoil(true);
 			this.setDirection(direction.getOpposite());
+			zone.addEntityModified(this);
+
 		}
-		zone.addEntityModified(this);
 	}
 	
+	/**
+	 * {@summary} launch recoil animation on the ImageView on the scene after a movement (called in gameloop)
+	 */
 	public void recoilOnScene() {
 		Direction recoilDirection = this.getDirection().getOpposite();
 		ImageView imageView = this.getTexture().getImgView();
@@ -189,6 +221,9 @@ public abstract class LivingEntity extends Entity{
 		this.setInRecoil(false);
 	}
 	
+	/**
+	 * {@summary} enable Invincibility and launch invincibility animation
+	 */
 	public void enableInvincibility() {
 		int invincibilityDuration = (this instanceof Enemy)?(int)(GameConstants.ONHIT_INVINCIBILITY_DURATION/2):GameConstants.ONHIT_INVINCIBILITY_DURATION;
 		ImageView imageView = this.getTexture().getImgView();
@@ -203,8 +238,11 @@ public abstract class LivingEntity extends Entity{
 		}, invincibilityDuration);
 	}
 	
-	public boolean willCollide(Direction direction, Zone zone) {
-		return (!zone.getBox(direction, this.getCoord()).isEmpty());
+	/**
+	 * {@summary} check if the L.Entity will collide with another Entity in if ove in direction
+	 */
+	public boolean willCollide(Direction direction) {
+		return (!Game.getZone().getBox(direction, this.getCoord()).isEmpty());
 	}
 
 	public boolean isInvincible() {
@@ -239,8 +277,15 @@ public abstract class LivingEntity extends Entity{
 		this.inRun = inRun;
 	}
 	
+	/**
+	 * {@summary} check if the L.Entity is enable to move 
+	 */
 	public boolean canMove() {
-		return (!this.isInMovement() && !this.isInRecoil() && !this.isInAction());
+		return 
+		(
+			(!this.isInMovement() && !this.isInRecoil() && !this.isInAction()) && 
+			!(this.isInAnimation() && this.isInMovement())
+		);
 	}
 
 	public boolean isInRecoil() {
@@ -259,13 +304,20 @@ public abstract class LivingEntity extends Entity{
 		this.isDead = isDead;
 	}
 	
-	public void DeadOnScene() {
-       Animation.disapearAnimation(this.getTexture().getImgView());
+	/**
+	 * {@summary} launch animation & update on Scene when an entity is dead (called by gameloop)
+	 */
+	public void deadOnScene() {
+       disapearOnScene();;
     }
 	
 	@Override
 	public String toString() {
 		return "LIVING ENTITY" ;
+	}
+
+	public int getMaxHealth() {
+		return maxHealth;
 	}
 	
 }

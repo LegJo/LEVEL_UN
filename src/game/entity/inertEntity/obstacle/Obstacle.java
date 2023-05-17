@@ -4,7 +4,6 @@ import game.entity.Entity;
 import game.entity.inertEntity.InertEntity;
 import game.map.Coord;
 import game.map.Direction;
-import game.map.Zone;
 import game.texture.Texture;
 
 public abstract class Obstacle extends InertEntity {
@@ -14,7 +13,7 @@ public abstract class Obstacle extends InertEntity {
 	}
 	
 	@Override
-	public void resolvCollision(Entity entity, Direction direction, Zone zone) {
+	public void resolvCollision(Entity entity, Direction direction) {
 		return;  
 	}
 

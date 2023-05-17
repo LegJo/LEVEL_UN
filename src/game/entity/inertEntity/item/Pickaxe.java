@@ -10,14 +10,14 @@ import game.map.Direction;
 import game.map.Zone;
 import game.texture.Texture;
 
-public class Sword extends Item {
+public class Pickaxe extends Item {
 	private int power;
 	
-	public Sword(Coord coord) {
-		super(coord, new Texture(GameConstants.SWORD_IMGPATH), 8);
+	public Pickaxe(Coord coord) {
+		super(coord, new Texture(GameConstants.PICKAXE_IMGPATH), 8);
 		this.isTool = true;
-		this.power = 15;
-		String[] actionImgPath = GameConstants.SWORD_ACTION_IMGPATH;
+		this.power = 4;
+		String[] actionImgPath = GameConstants.SWORD_ACTION_IMGPATH; //a changer si le temps de refaire les images
 		for (int i = 0; i < actionImgPath.length; i++) {
 			this.actionTexture[i] = new Texture(actionImgPath[i]);
 		}
@@ -44,11 +44,11 @@ public class Sword extends Item {
 	
 	@Override
 	public String toString() {
-		return "SWORD";
+		return "PICKAXE";
 	}
 	
 	@Override
 	public Entity copy(Coord coord) {
-		return new Sword(coord);
+		return new Pickaxe(coord);
 	}
 }

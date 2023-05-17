@@ -5,6 +5,7 @@ import javafx.animation.FadeTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.Transition;
 import javafx.animation.TranslateTransition;
+import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
@@ -32,6 +33,7 @@ public class Animation {
 	        		float endFrac = (float) (i+1)/images.length;
 	        		if (frac >= startFrac && frac < endFrac) {
 		            	imageView.setImage(images[i]);
+		            	imageView.toBack();
 	        		}
 	        	}
 	        }
@@ -84,12 +86,12 @@ public class Animation {
 	    );
 	}
 	
-	public static void disapearAnimation(ImageView imageView) {
-		FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.5), imageView);
+	public static void disapearAnimation(Node node) {
+		FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.5), node);
         fadeOut.setFromValue(1.0);
         fadeOut.setToValue(0.0);
-        fadeOut.setOnFinished(event -> imageView.setVisible(false));
-        SequentialTransition sequence = new SequentialTransition(imageView, fadeOut);
+        fadeOut.setOnFinished(event -> node.setVisible(false));
+        SequentialTransition sequence = new SequentialTransition(node, fadeOut);
         sequence.play();
 	}
 }

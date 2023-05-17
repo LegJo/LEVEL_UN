@@ -27,7 +27,7 @@ public class Heart {
 	
 	public int addHealthIn(int healthToAdd) {
 		int healthAddable = 10 - this.getHealthIn();
-		if(healthToAdd > this.getHealthIn()) {
+		if(healthToAdd > healthAddable) {
 			this.setHealthIn(10);
 			return (healthToAdd - healthAddable);
 		} else {
